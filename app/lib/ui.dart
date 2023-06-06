@@ -6,6 +6,7 @@ int view = -1;
 
 class AppState extends State{
   bool _loading = true;
+  final TextEditingController _search = TextEditingController();
 
   void _fetch({String? value}) async{
     data.addAll(await Api.fetch(get: value)); 
@@ -36,16 +37,23 @@ class AppState extends State{
         child: Column(
           children: [
             TextField(
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
+              controller: _search,
+              decoration: InputDecoration(
+                suffixIcon: IconButton(
+                  onPressed: (){
+                    setState(() {
+                      data.clear();
+                      _fetch(value: _search.text);
+                    });
+                  },
+                  icon: const Icon(Icons.search)
+                ),
                 hintText: 'Search for a Recipe'
               ),
-              onChanged: (input) {
-                setState(() {
-                  data.clear();
-                  _fetch(value: input);
-                });
-              },
+              onSubmitted: (value) => setState(() {
+                data.clear();
+                _fetch(value: _search.text);
+              }),
             ),
       
             const SizedBox(
@@ -79,13 +87,15 @@ class AppState extends State{
                             children: [
                               Image(
                                 image: NetworkImage(data[index].image),
-                                width: 150,
-                                height: 150,
+                                width: 120,
+                                height: 120,
                               ),
                       
-                              Text(data[index].name, 
-                                style: const TextStyle(
-                                  fontSize: 15
+                              Center(
+                                child: Text(data[index].name, 
+                                  style: const TextStyle(
+                                    fontSize: 15
+                                  ),
                                 ),
                               ),
                       
@@ -144,7 +154,6 @@ class _DisplayState extends State<Display>{
                   style: const TextStyle(
                     fontSize: 18
                   ),
-                  overflow: TextOverflow.visible,
                 ),
               ),
             )
