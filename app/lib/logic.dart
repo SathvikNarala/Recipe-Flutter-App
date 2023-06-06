@@ -26,15 +26,13 @@ class Api{
 }
 
 class Meal{
-  String id, name, category, area, instructions, image;
+  String name, category, instructions, image;
 
-  Meal(this.id, this.name, this.category, this.area, this.instructions, this.image);
+  Meal(this.name, this.category, this.instructions, this.image);
 
-  Meal.fromJson(Map<String, dynamic> data):
-    id = data['idMeal'], 
+  Meal.fromJson(Map<String, dynamic> data): 
     name = data['strMeal'],
     category = data['strCategory'],
-    area = data['strArea'],
     instructions = data['strInstructions'],
     image = data['strMealThumb'];
 

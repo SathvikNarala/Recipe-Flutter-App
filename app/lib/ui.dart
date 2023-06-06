@@ -58,41 +58,30 @@ class AppState extends State{
               child: _loading ? const Center(
                 child: CircularProgressIndicator()
               )
-                : ListView.builder(
+                : GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3
+                    ),
                     itemCount: data.length,
                     itemBuilder: (context, index){
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 50,
-                            child: Image(
+                      return Card(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image(
                               image: NetworkImage(data[index].image),
-                              width: 500,
-                              height: 500,
+                              width: 150,
+                              height: 150,
                             ),
-                          ),
-                          title: Text(data[index].name),
-                          subtitle: Text(data[index].category),
-                          focusColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(
-                              color: Colors.blueGrey,
-                              width: 1
+
+                            Text(data[index].name, 
+                              style: const TextStyle(
+                                fontSize: 15
+                              ),
                             ),
-                            borderRadius: BorderRadius.circular(5)
-                          ),
-                          onTap: (){
-                            setState(() {
-                              view = index;
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const Display()
-                                )
-                              );  
-                            });
-                            
-                          },
+
+                            Text(data[index].category)
+                          ],
                         ),
                       );
                     }
