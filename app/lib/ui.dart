@@ -6,7 +6,6 @@ int view = -1;
 
 class AppState extends State{
   bool _loading = true;
-  final TextEditingController _search = TextEditingController();
 
   void _fetch({String? value}) async{
     data.addAll(await Api.fetch(get: value)); 
@@ -37,7 +36,6 @@ class AppState extends State{
         child: Column(
           children: [
             TextField(
-              controller: _search,
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.search),
                 hintText: 'Search for a Recipe'
@@ -64,24 +62,36 @@ class AppState extends State{
                     ),
                     itemCount: data.length,
                     itemBuilder: (context, index){
-                      return Card(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Image(
-                              image: NetworkImage(data[index].image),
-                              width: 150,
-                              height: 150,
-                            ),
-
-                            Text(data[index].name, 
-                              style: const TextStyle(
-                                fontSize: 15
+                      return InkWell(
+                        onTap: (){
+                          setState(() {
+                            view = index;
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const Display()
+                              )
+                            );
+                          });
+                        },
+                        child: Card(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Image(
+                                image: NetworkImage(data[index].image),
+                                width: 150,
+                                height: 150,
                               ),
-                            ),
-
-                            Text(data[index].category)
-                          ],
+                      
+                              Text(data[index].name, 
+                                style: const TextStyle(
+                                  fontSize: 15
+                                ),
+                              ),
+                      
+                              Text(data[index].category)
+                            ],
+                          ),
                         ),
                       );
                     }
