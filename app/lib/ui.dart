@@ -115,18 +115,8 @@ class _AppState extends State{
   }
 }
 
-class Display extends StatefulWidget{
-
+class Display extends StatelessWidget{
   const Display({super.key});
-  
-  @override
-  State<StatefulWidget> createState() {
-    return _DisplayState();
-  }
-
-}
-
-class _DisplayState extends State<Display>{
 
   @override
   Widget build(BuildContext context) {
