@@ -4,7 +4,16 @@ import 'logic.dart';
 List<Meal> data = [];
 int view = -1;
 
-class AppState extends State{
+class App extends StatefulWidget{
+  const App({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _AppState();
+  }
+}
+
+class _AppState extends State{
   bool _loading = true;
   final TextEditingController _search = TextEditingController();
 
@@ -98,7 +107,7 @@ class AppState extends State{
                       );
                     }
                   ),
-              ),
+                ),
           ],
         ),
       ),

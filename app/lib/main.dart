@@ -16,12 +16,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class App extends StatefulWidget{
-  const App({super.key});
-
-  @override
-  State<StatefulWidget> createState() {
-    return AppState();
-  }
-}
-
