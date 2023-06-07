@@ -19,7 +19,7 @@ class AppState extends State{
   @override
   void initState() {
     super.initState();
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 12; i++){
       _fetch();
     }
   }
@@ -28,7 +28,9 @@ class AppState extends State{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recipe App'),
+        title: const Center(
+          child: Text('Recipe App')
+        ),
         backgroundColor: Colors.green,
       ),
       
@@ -60,13 +62,15 @@ class AppState extends State{
               height: 50,
             ),
       
-            Expanded(
-              child: _loading ? const Center(
-                child: CircularProgressIndicator()
-              )
-                : GridView.builder(
+            _loading ? const Center(
+              child: CircularProgressIndicator()
+            )
+              : Expanded(
+                child: GridView.builder(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12
                     ),
                     itemCount: data.length,
                     itemBuilder: (context, index){
@@ -81,32 +85,20 @@ class AppState extends State{
                             );
                           });
                         },
-                        child: Card(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Image(
-                                image: NetworkImage(data[index].image),
-                                width: 120,
-                                height: 120,
-                              ),
-                      
-                              Center(
-                                child: Text(data[index].name, 
-                                  style: const TextStyle(
-                                    fontSize: 15
-                                  ),
-                                ),
-                              ),
-                      
-                              Text(data[index].category)
-                            ],
-                          ),
-                        ),
+                        child: GridTile(
+                          footer: GridTileBar(
+                              backgroundColor: Colors.black45,
+                              title: Text(data[index].name),
+                              subtitle: Text(data[index].category),
+                            ),
+                          child: Image(
+                            image: NetworkImage(data[index].image)
+                          )
+                        )
                       );
                     }
                   ),
-            ),
+              ),
           ],
         ),
       ),
