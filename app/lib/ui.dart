@@ -3,6 +3,7 @@ import 'logic.dart';
 
 List<Meal> data = [];
 int view = -1;
+bool isHome = true;
 
 class App extends StatefulWidget{
   const App({super.key});
@@ -14,22 +15,22 @@ class App extends StatefulWidget{
 }
 
 class _AppState extends State{
-  bool _loading = true;
-  final TextEditingController _search = TextEditingController();
 
   void _fetch({String? value}) async{
-    data.addAll(await Api.fetch(get: value)); 
-
-    setState(() {  
-      _loading = false;
+    List<Meal> temp = await Logic.fetch(value);
+    
+    setState(() {
+      data.addAll(temp);
     });
   }
 
   @override
   void initState() {
     super.initState();
-    for(int i = 0; i < 12; i++){
-      _fetch();
+    if(isHome){
+      for(int i = 0; i < 12; i++){
+        _fetch();
+      }
     }
   }
   
@@ -44,70 +45,158 @@ class _AppState extends State{
       ),
       
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12
+                ),
+                itemCount: data.length,
+                itemBuilder: (context, index){
+                  return InkWell(
+                    onTap: (){
+                      setState(() {
+                        view = index;
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const Display()
+                          )
+                        );
+                      });
+                    },
+                    child: GridTile(
+                      footer: GridTileBar(
+                          backgroundColor: Colors.black45,
+                          title: Text(data[index].name),
+                          subtitle: Text(data[index].category),
+                        ),
+                      child: Image(
+                        image: NetworkImage(data[index].image)
+                      )
+                    )
+                  );
+                }
+              ),
+            ),
+          ]
+        ),
+      ),
+      
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          setState(() {
+            if(isHome){
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const SearchBar()
+                )
+              );
+            }
+            else if(Navigator.canPop(context)){
+                Navigator.of(context).pop();
+            }
+            else{
+              isHome = true;
+            }
+          });
+        },
+        child: const Icon(
+          Icons.search_sharp
+        )
+      ),
+    );
+  }
+}
+
+//Handling Search bar and suggestions
+class SearchBar extends StatefulWidget {
+  const SearchBar({super.key});
+
+  @override
+  State<SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<SearchBar> {
+  final TextEditingController _search = TextEditingController();
+  final List<Search> _list = [];
+
+  void _init() async{
+    List<Search> search = await Logic.suggest('');
+
+    setState(() {
+      _list.addAll(search);
+    });
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text('Search')
+        ),
+        backgroundColor: Colors.green,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
         child: Column(
           children: [
             TextField(
               controller: _search,
               decoration: InputDecoration(
                 suffixIcon: IconButton(
-                  onPressed: (){
+                  onPressed: () async{
+                    List<Meal> fetched = await Logic.fetch(_search.text);
+      
                     setState(() {
+                      isHome = false;
                       data.clear();
-                      _fetch(value: _search.text);
+                      data.addAll(fetched);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const App()
+                        )
+                      );
                     });
                   },
                   icon: const Icon(Icons.search)
                 ),
                 hintText: 'Search for a Recipe'
               ),
-              onSubmitted: (value) => setState(() {
-                data.clear();
-                _fetch(value: _search.text);
-              }),
+              onChanged: (value) async{
+                
+              },
             ),
       
             const SizedBox(
               height: 50,
             ),
       
-            _loading ? const Center(
-              child: CircularProgressIndicator()
-            )
-              : Expanded(
-                child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12
+            Expanded(
+              child: ListView.builder(
+                itemCount: _list.length,
+                itemBuilder: (context, index){
+                  return InkWell(
+                    onTap: (){
+                      
+                    },
+                    child: ListTile(
+                      title: Text(_list[index].query),
                     ),
-                    itemCount: data.length,
-                    itemBuilder: (context, index){
-                      return InkWell(
-                        onTap: (){
-                          setState(() {
-                            view = index;
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const Display()
-                              )
-                            );
-                          });
-                        },
-                        child: GridTile(
-                          footer: GridTileBar(
-                              backgroundColor: Colors.black45,
-                              title: Text(data[index].name),
-                              subtitle: Text(data[index].category),
-                            ),
-                          child: Image(
-                            image: NetworkImage(data[index].image)
-                          )
-                        )
-                      );
-                    }
-                  ),
-                ),
+                  );
+                }
+              ),
+            )
           ],
         ),
       ),
@@ -115,6 +204,7 @@ class _AppState extends State{
   }
 }
 
+//For Displaying the Recipe instructions
 class Display extends StatelessWidget{
   const Display({super.key});
 
