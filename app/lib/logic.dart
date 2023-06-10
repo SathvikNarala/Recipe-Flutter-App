@@ -1,9 +1,13 @@
 // ignore_for_file: control_flow_in_finally
 import 'dart:convert';
+import 'package:hive_flutter/adapters.dart';
 import 'package:http/http.dart' as http;
 
-class Api{
-  static Future<List<Meal>> fetch({String? get}) async{
+
+// part 'logic.g.dart';
+
+class Logic{
+  static Future<List<Meal>> fetch(String? get) async{
     String request = get == null ? 'random.php' : 'search.php?s=$get';
     List<Meal> fetched = [];
 
@@ -23,6 +27,43 @@ class Api{
       return fetched;
     }
   }
+
+  static Future<List<Search>> suggest(String query, [bool check = false]) async{
+    await Hive.initFlutter('lib/history');
+    Box suggestions = await Hive.openBox('temporary');
+
+    List<Search> suggestion = [];
+
+    if(check){
+      if(suggestions.get(query) == null){
+        suggestions.put(query, 1);
+      }
+      else{
+        int k = suggestions.get(query);
+        suggestions.delete(query);
+        suggestions.put(query, k);
+      }
+    }
+    else{
+      query = query.trim();
+      
+      if(query == ''){
+        for(String key in suggestions.keys){
+          suggestion.add(Search(key));
+        }
+      }
+
+      else{
+        for(String key in suggestions.keys){
+          if(RegExp(r'^' + query + r'.*$').hasMatch(key)){
+            suggestion.add(Search(key));
+          }
+        }
+      }
+    }
+
+    return suggestion;
+  }
 }
 
 class Meal{
@@ -36,4 +77,18 @@ class Meal{
     instructions = data['strInstructions'],
     image = data['strMealThumb'];
 
+}
+
+class Search{
+  String query;
+
+  Search(this.query);
+}
+
+@HiveType(typeId: 0)
+class Forhive extends HiveObject{
+  @HiveField(0)
+  int value;
+
+  Forhive(this.value);
 }
