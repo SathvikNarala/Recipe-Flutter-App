@@ -122,20 +122,20 @@ class SearchBar extends StatefulWidget {
 
 class _SearchBarState extends State<SearchBar> {
   final TextEditingController _search = TextEditingController();
-  final List<Search> _list = [];
+  List<Search> _list = [];
 
-  void _init() async{
-    List<Search> search = await Logic.suggest('');
+  void _get(String query) async{
+    List<Search> search = await Logic.suggest(query);
 
     setState(() {
-      _list.addAll(search);
+      _list = search;
     });
   }
 
   @override
   void initState(){
     super.initState();
-    _init();
+    _get('');
   }
 
   @override
@@ -157,6 +157,7 @@ class _SearchBarState extends State<SearchBar> {
                 suffixIcon: IconButton(
                   onPressed: () async{
                     List<Meal> fetched = await Logic.fetch(_search.text);
+                    _list = await Logic.suggest(_search.text, true);
       
                     setState(() {
                       isHome = false;
@@ -174,7 +175,7 @@ class _SearchBarState extends State<SearchBar> {
                 hintText: 'Search for a Recipe'
               ),
               onChanged: (value) async{
-                
+                _get(value);
               },
             ),
       
@@ -188,9 +189,14 @@ class _SearchBarState extends State<SearchBar> {
                 itemBuilder: (context, index){
                   return InkWell(
                     onTap: (){
-                      
+                      setState(() {
+                        _search.text = _list[index].query;
+                      });
                     },
                     child: ListTile(
+                      leading: const Icon(
+                        Icons.history
+                      ),
                       title: Text(_list[index].query),
                     ),
                   );
