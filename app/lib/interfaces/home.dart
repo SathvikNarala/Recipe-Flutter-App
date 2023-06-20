@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider.dart';
 import 'display.dart';
+import 'search.dart' as use;
 
 class App extends StatefulWidget{
   const App({super.key});
@@ -84,7 +85,7 @@ class _AppState extends State{
           if(flow.isHome){
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const SearchBar()
+                builder: (context) => const use.SearchBar()
               )
             );
           }
