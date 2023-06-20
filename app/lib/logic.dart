@@ -1,10 +1,8 @@
-// ignore_for_file: control_flow_in_finally
 import 'dart:convert';
 import 'package:hive_flutter/adapters.dart';
 import 'package:http/http.dart' as http;
+import 'data.dart';
 
-
-// part 'logic.g.dart';
 
 class Logic{
   static Future<List<Meal>> fetch(String? get) async{
@@ -21,11 +19,11 @@ class Logic{
           fetched.add(Meal.fromJson(entry));
         }
       }
-    }catch(exception){
+    }catch(error){
       rethrow;
-    }finally{
-      return fetched;
     }
+
+    return fetched;
   }
 
   static Future<List<Search>> suggest(String query, [bool check = false]) async{
@@ -66,29 +64,3 @@ class Logic{
   }
 }
 
-class Meal{
-  String name, category, instructions, image;
-
-  Meal(this.name, this.category, this.instructions, this.image);
-
-  Meal.fromJson(Map<String, dynamic> data): 
-    name = data['strMeal'],
-    category = data['strCategory'],
-    instructions = data['strInstructions'],
-    image = data['strMealThumb'];
-
-}
-
-class Search{
-  String query;
-
-  Search(this.query);
-}
-
-@HiveType(typeId: 0)
-class Forhive extends HiveObject{
-  @HiveField(0)
-  int value;
-
-  Forhive(this.value);
-}
