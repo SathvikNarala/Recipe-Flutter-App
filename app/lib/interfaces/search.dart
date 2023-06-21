@@ -83,7 +83,10 @@ class _SearchBarState extends State<SearchBar> {
                   itemBuilder: (context, index){
                     return InkWell(
                       onTap: (){
-                        _search.text = flow.list[index].query;
+                        _search.value = TextEditingValue(
+                          text: flow.list[index].query,
+                          selection: TextSelection.collapsed(offset: flow.list[index].query.length)
+                        );
                       },
                       child: ListTile(
                         leading: const Icon(
