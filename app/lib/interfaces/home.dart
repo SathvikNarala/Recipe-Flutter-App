@@ -20,7 +20,7 @@ class _AppState extends State{
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if(context.read<Dataflow>().isHome){//know the reason
+      if(context.read<Dataflow>().isHome){//Used read only as the widget building is not started to listen to
         for(int i = 0; i < 12; i++){
           context.read<Dataflow>().fetch();
         }
