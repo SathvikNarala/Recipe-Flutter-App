@@ -21,9 +21,7 @@ class _AppState extends State{
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if(context.read<Dataflow>().isHome){//Used read only as the widget building is not started to listen to
-        for(int i = 0; i < 12; i++){
-          context.read<Dataflow>().fetch();
-        }
+        context.read<Dataflow>().fetch('');
       }
     });
   }
@@ -40,7 +38,11 @@ class _AppState extends State{
         backgroundColor: Colors.green,
       ),
       
-      body: Padding(
+      body: flow.loading ?
+      const Center(
+        child: CircularProgressIndicator()
+      ):
+      Padding(
         padding: const EdgeInsets.all(18.0),
         child: Column(
           children: [
@@ -69,7 +71,7 @@ class _AppState extends State{
                           subtitle: Text(flow.data[index].category),
                         ),
                       child: Image(
-                        image: NetworkImage(flow.data[index].image)
+                        image: NetworkImage(flow.data[index].image),
                       )
                     )
                   );

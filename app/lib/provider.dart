@@ -8,9 +8,11 @@ class Dataflow with ChangeNotifier{
   final List<Meal> data = [];
   int view = -1;
   bool isHome = true;
+  bool loading = true;
 
-  void fetch({String? value}) async{
+  void fetch(String value) async{
     List<Meal> temp = [];
+    loading = true;
 
     try{
       temp = await Logic.fetch(value);
@@ -18,6 +20,7 @@ class Dataflow with ChangeNotifier{
       log(error.toString());
     }
     
+    loading = false;
     data.addAll(temp);
     notifyListeners();
   }
@@ -47,7 +50,7 @@ class Searchflow with ChangeNotifier{
   void onSearch(String query, Dataflow obj){
     obj.setHome(false);
     obj.data.clear();
-    obj.fetch(value: query);
+    obj.fetch(query);
     get(query, true);
 
     notifyListeners();
