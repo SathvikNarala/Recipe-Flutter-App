@@ -1,31 +1,28 @@
-// ignore_for_file: control_flow_in_finally
 import 'dart:convert';
 import 'package:hive_flutter/adapters.dart';
 import 'package:http/http.dart' as http;
+import 'data.dart';
 
-
-// part 'logic.g.dart';
 
 class Logic{
-  static Future<List<Meal>> fetch(String? get) async{
-    String request = get == null ? 'random.php' : 'search.php?s=$get';
+  static Future<List<Meal>> fetch(String request) async{
     List<Meal> fetched = [];
 
     try{
-      String url = 'https://www.themealdb.com/api/json/v1/1/$request';
+      String url = 'https://api.edamam.com/search?q=$request&app_id=66a6f291&app_key=6a6e34bdf1fdb66207d6acde954d6906&from=0&to=12&calories=500-1800';
       http.Response response = await http.get(Uri.parse(url));
       if(response.statusCode == 200){
         Map<String, dynamic> json = jsonDecode(response.body);
 
-        for(Map<String, dynamic> entry in json['meals']){
-          fetched.add(Meal.fromJson(entry));
+        for(Map<String, dynamic> entry in json['hits']){
+          fetched.add(Meal.fromJson(entry['recipe']));
         }
       }
-    }catch(exception){
+    }catch(error){
       rethrow;
-    }finally{
-      return fetched;
     }
+
+    return fetched;
   }
 
   static Future<List<Search>> suggest(String query, [bool check = false]) async{
@@ -66,29 +63,3 @@ class Logic{
   }
 }
 
-class Meal{
-  String name, category, instructions, image;
-
-  Meal(this.name, this.category, this.instructions, this.image);
-
-  Meal.fromJson(Map<String, dynamic> data): 
-    name = data['strMeal'],
-    category = data['strCategory'],
-    instructions = data['strInstructions'],
-    image = data['strMealThumb'];
-
-}
-
-class Search{
-  String query;
-
-  Search(this.query);
-}
-
-@HiveType(typeId: 0)
-class Forhive extends HiveObject{
-  @HiveField(0)
-  int value;
-
-  Forhive(this.value);
-}
