@@ -29,39 +29,39 @@ class Logic{
 
   static Future<List<Search>> suggest(String query, [bool check = false]) async{
     await Hive.initFlutter('lib/history');
-    Box suggestions = await Hive.openBox('temporary');
+    Box history = await Hive.openBox('temporary');
 
-    List<Search> suggestion = [];
+    List<Search> suggestions = [];
 
     if(check){
-      if(suggestions.get(query) == null){
-        suggestions.put(query, 1);
+      if(history.get(query) == null){
+        history.put(query, 1);
       }
       else{
-        int k = suggestions.get(query);
-        suggestions.delete(query);
-        suggestions.put(query, k);
+        int k = history.get(query);
+        history.delete(query);
+        history.put(query, k);
       }
     }
     else{
       query = query.trim();
       
       if(query == ''){
-        for(String key in suggestions.keys){
-          suggestion.add(Search(key));
+        for(String key in history.keys){
+          suggestions.add(Search(key));
         }
       }
 
       else{
-        for(String key in suggestions.keys){
+        for(String key in history.keys){
           if(RegExp(r'^' + query + r'.*$').hasMatch(key)){
-            suggestion.add(Search(key));
+            suggestions.add(Search(key));
           }
         }
       }
     }
 
-    return suggestion;
+    return suggestions;
   }
 }
 
