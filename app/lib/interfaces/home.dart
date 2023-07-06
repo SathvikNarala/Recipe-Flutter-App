@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider.dart';
@@ -21,7 +23,7 @@ class _AppState extends State{
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if(context.read<Dataflow>().isHome){//Used read only as the widget building is not started to listen to
-        context.read<Dataflow>().fetch('');
+        context.read<Dataflow>().fetch(String.fromCharCode(Random().nextInt(27) + 65));
       }
     });
   }
